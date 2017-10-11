@@ -7,13 +7,13 @@ class World2D:
         self.matrix = [ [0 for i in range(self.width)] for j in range(self.height)]
         self.robotList = []
         for i in range(self.height):
-            self.matrix[i].insert(random.randint(0, self.width), '#')
-            self.matrix[i].insert(random.randint(0, self.width), '#')
+            self.matrix[i][random.randint(0, self.width-1)] = '#'
+            self.matrix[i][random.randint(0, self.width-1)] = '#'
         for i in range(self.height):
-            randomNumber = random.randint(0, self.width);
+            randomNumber = random.randint(0, self.width-1);
             while self.matrix[i][randomNumber] == "#":
-                randomNumber = random.randint(0, self.width)
-            self.matrix[i].insert(randomNumber, "R" + i.__str__())
+                randomNumber = random.randint(0, self.width-1);
+            self.matrix[i][randomNumber] = "R" + i.__str__();
 
     def worldPrint(self):
         for i in range(self.height):
@@ -22,7 +22,7 @@ class World2D:
     def makeRobots(self):
         for i in range(self.height):
             for j in range(self.width):
-                if(isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == "R"):
+                if(isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == 'R'):
                     rob = Robot(self.matrix[i][j], (i,j), self)
                     self.robotList.append(rob)
 
@@ -163,8 +163,10 @@ class Robot:
 world = World2D(10, 10)
 world.worldPrint()
 world.makeRobots()
-world.printRobots()
-for r in world.robotList:
-    r.step()
+#world.printRobots()
 
-world.worldPrint()
+#for r in world.robotList:
+#    r.step()
+world.printRobots()
+print(len(world.robotList))
+#world.worldPrint()
