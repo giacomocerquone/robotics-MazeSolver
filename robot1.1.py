@@ -156,7 +156,7 @@ class Robot:
             world.change(self.pos[0],self.pos[1],0)
             self.setPosition(self.pos[0],self.pos[1]+1)
         elif move == 'X':
-            print("merda")
+            print("porca merda, non posso muovermi")
 
 
 
