@@ -45,11 +45,11 @@ class World2D:
             out.append(('S', "-"))
         else: out.append(('S', self.matrix[pos[0] + 1] [pos[1]]))
         if pos[1]==0:
-            out.append(('E', "|"))
-        else: out.append(('E', self.matrix[pos[0]] [pos[1]+1]))
-        if pos[1]==self.width-1:
             out.append(('W', "|"))
         else: out.append(('W', self.matrix[pos[0]] [pos[1]-1]))
+        if pos[1]==self.width-1:
+            out.append(('E', "|"))
+        else: out.append(('E', self.matrix[pos[0]] [pos[1]+1]))
 
         return out
 
@@ -113,7 +113,7 @@ class Robot:
             if s[0] == 'N': self.map[1][2] = s[1]
             if s[0] == 'S': self.map[3][2] = s[1]
             if s[0] == 'W': self.map[2][1] = s[1]
-            if s[0] == 'E': self.map[2][1] = s[1]
+            if s[0] == 'E': self.map[2][3] = s[1]
         self.mapPrint();
 
     def think(self):
@@ -163,10 +163,9 @@ class Robot:
 world = World2D(10, 10)
 world.worldPrint()
 world.makeRobots()
-#world.printRobots()
-
-#for r in world.robotList:
-#    r.step()
 world.printRobots()
-print(len(world.robotList))
-#world.worldPrint()
+
+for r in world.robotList:
+    r.step()
+world.printRobots()
+world.worldPrint()
