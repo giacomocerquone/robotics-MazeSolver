@@ -49,7 +49,7 @@ class World2D:
         else: out.append(('E', self.matrix[pos[0]] [pos[1]+1]))
         if pos[1]==self.width-1:
             out.append(('W', "|"))
-        else: out.append(('S', self.matrix[pos[0]] [pos[1]-1]))
+        else: out.append(('W', self.matrix[pos[0]] [pos[1]-1]))
 
         return out
 
