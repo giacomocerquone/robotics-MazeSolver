@@ -1,14 +1,18 @@
+"""Main module"""
+
 from World2D import World2D
 
 def main():
+    """Main function"""
     world = World2D(10, 10)
-    world.worldPrint()
-    world.makeRobots()
-    world.printRobots()
+    world.world_print()
+    world.make_robots()
+    world.print_robots()
 
-    for r in world.robotList:
-        r.step()
-    world.printRobots()
-    world.worldPrint()
+    for robot in world.robot_list:
+        robot.step()
+    world.print_robots()
+    world.world_print()
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
