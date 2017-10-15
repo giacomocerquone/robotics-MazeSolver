@@ -3,10 +3,8 @@
 import random
 
 class Robot:
+    """Defines how a Robot object is created"""
 
-    '''
-    Defines how a Robot object is created
-    '''
     def __init__(self, name, pos, world=None):
         assert isinstance(name, str)
         assert isinstance(pos, tuple)
@@ -29,7 +27,6 @@ class Robot:
         self.pos = (i, j)
         self.myworld.change(i, j, self.name)
 
-
     def map_print(self):
         """Print the map"""
 
@@ -49,7 +46,6 @@ class Robot:
 
     def __str__(self):
         return self.name + "@" + str(self.pos)
-
 
     def perception(self, sensors):
         """Build an internal model of the world given current sensor values"""
