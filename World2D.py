@@ -24,7 +24,7 @@ class World2D:
         """Print the world"""
 
         for i in range(self.height):
-            print(self.matrix[i])
+            print('\t'.join(str(v) for v in self.matrix[i]))
 
     def make_robots(self):
         """Instantiate the robots"""
