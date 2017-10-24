@@ -46,7 +46,7 @@ class World2D:
                     self.robot_list.append(rob)
 
     def make_foods(self):
-        """Instantiate the foods"""
+        """Instantiate the food"""
 
         for i in range(self.height):
             for j in range(self.width):
