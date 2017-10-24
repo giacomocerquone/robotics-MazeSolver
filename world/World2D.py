@@ -1,8 +1,8 @@
 """World representation"""
 
 import random
-from Robot import Robot
-from Food import Food
+from robot.Robot import Robot
+from food.Food import Food
 
 class World2D:
     """World representation class"""

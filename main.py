@@ -1,5 +1,5 @@
 """Main module"""
-from World2D import World2D
+from world.World2D import World2D
 
 def main():
     """Main function"""
