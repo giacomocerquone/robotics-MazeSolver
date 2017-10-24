@@ -12,7 +12,7 @@ class World2D:
         self.height = height
         self.matrix = [[0 for i in range(self.width)] for j in range(self.height)]
         self.robot_list = []
-        self.food_list = []
+        self.food_list = 0
         # Adding walls char in matrix
         for i in range(self.height):
             self.matrix[i][random.randint(0, self.width-1)] = '#'
@@ -42,7 +42,7 @@ class World2D:
         for i in range(self.height):
             for j in range(self.width):
                 if isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == 'R':
-                    rob = Robot(self.matrix[i][j], (i, j), self)
+                    rob = Robot(self.matrix[i][j], (i, j), "random", self)
                     self.robot_list.append(rob)
 
     def make_foods(self):
@@ -51,13 +51,20 @@ class World2D:
         for i in range(self.height):
             for j in range(self.width):
                 if isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == 'o':
-                    food = Food((i, j), self)
-                    self.food_list.append(food)
+                    Food((i, j), self)
+                    self.food_list += 1
 
     def print_robots(self):
         """Print the robots"""
         for robot in self.robot_list:
             print(robot)
+
+    def print_ranking(self):
+        """Print the ranking"""
+        ranking = dict()
+        for robot in self.robot_list:
+            ranking[robot.name] = robot.points
+        print(ranking)
 
     def get_around(self, pos):
 
@@ -90,3 +97,6 @@ class World2D:
         """Swap the object in i, j with the object in name"""
         self.matrix[i].pop(j)
         self.matrix[i].insert(j, name)
+
+    def food_eaten(self):
+        self.food_list -= 1

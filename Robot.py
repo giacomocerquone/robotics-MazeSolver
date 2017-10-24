@@ -5,7 +5,7 @@ import random
 class Robot:
     """Defines how a Robot object is created"""
 
-    def __init__(self, name, pos, world=None):
+    def __init__(self, name, pos, kind, world=None):
         assert isinstance(name, str)
         assert isinstance(pos, tuple)
         assert len(pos) == 2
@@ -14,6 +14,8 @@ class Robot:
         self.pos = pos
         self.width, self.height = 5, 5
         self.map = [[0 for i in range(self.width)] for j in range(self.height)]
+        self.points = 0
+        self.kind = kind
         self.myworld = world
 
     def get_position(self):
@@ -31,7 +33,7 @@ class Robot:
         """Print the map"""
 
         for i in range(self.height):
-            print(self.map[i])
+            print('\t'.join(str(v) for v in self.map[i]))
 
     def step(self):
         """This is one step of the robot's life"""
@@ -50,6 +52,7 @@ class Robot:
     def perception(self, sensors):
         """Build an internal model of the world given current sensor values"""
 
+        self.map[2][2] = self.name
         for sensor in sensors:
             if sensor[0] == 'N':
                 self.map[1][2] = sensor[1]
@@ -68,15 +71,18 @@ class Robot:
         :return N S E W or Blocked:
         """
 
-        out = []
-        if self.map[1][2] == 0:
-            out.append('N')
-        if self.map[3][2] == 0:
-            out.append('S')
-        if self.map[2][1] == 0:
-            out.append('W')
-        if self.map[2][3] == 0:
-            out.append('E')
+        # Change here to let the robot eat the food
+        if self.kind == "random":
+            out = []
+            if self.map[1][2] in [0, 'o']:
+                out.append('N')
+            if self.map[3][2] in [0, 'o']:
+                out.append('S')
+            if self.map[2][1] in [0, 'o']:
+                out.append('W')
+            if self.map[2][3] in [0, 'o']:
+                out.append('E')
+
         if not out:
             out.append('X')
 
@@ -92,15 +98,27 @@ class Robot:
         print(self.name)
         print(move)
         if move == 'N':
+            if self.map[1][2] == 'o':
+                self.points += 1
+                self.myworld.food_eaten()
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0]-1, self.pos[1])
         elif move == 'S':
+            if self.map[3][2] == 'o':
+                self.points += 1
+                self.myworld.food_eaten()
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0]+1, self.pos[1])
         elif move == 'W':
+            if self.map[2][1] == 'o':
+                self.points += 1
+                self.myworld.food_eaten()
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0], self.pos[1]-1)
         elif move == 'E':
+            if self.map[2][3] == 'o':
+                self.points += 1
+                self.myworld.food_eaten()
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0], self.pos[1]+1)
         elif move == 'X':
