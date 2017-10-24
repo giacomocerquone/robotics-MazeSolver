@@ -100,25 +100,25 @@ class Robot:
         if move == 'N':
             if self.map[1][2] == 'o':
                 self.points += 1
-                self.myworld.food_eaten()
+                self.myworld.food_list -= 1
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0]-1, self.pos[1])
         elif move == 'S':
             if self.map[3][2] == 'o':
                 self.points += 1
-                self.myworld.food_eaten()
+                self.myworld.food_list -= 1
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0]+1, self.pos[1])
         elif move == 'W':
             if self.map[2][1] == 'o':
                 self.points += 1
-                self.myworld.food_eaten()
+                self.myworld.food_list -= 1
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0], self.pos[1]-1)
         elif move == 'E':
             if self.map[2][3] == 'o':
                 self.points += 1
-                self.myworld.food_eaten()
+                self.myworld.food_list -= 1
             self.myworld.change(self.pos[0], self.pos[1], 0)
             self.set_position(self.pos[0], self.pos[1]+1)
         elif move == 'X':

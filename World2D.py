@@ -64,7 +64,10 @@ class World2D:
         ranking = dict()
         for robot in self.robot_list:
             ranking[robot.name] = robot.points
-        print(ranking)
+        sorted_robots = sorted(ranking, key=ranking.get, reverse=True)
+        for key in sorted_robots:
+            print(key, ranking[key], end=', ')
+        print("\n")
 
     def get_around(self, pos):
 
@@ -97,6 +100,3 @@ class World2D:
         """Swap the object in i, j with the object in name"""
         self.matrix[i].pop(j)
         self.matrix[i].insert(j, name)
-
-    def food_eaten(self):
-        self.food_list -= 1

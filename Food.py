@@ -9,5 +9,4 @@ class Food:
 
         self.pos = pos
         self.width, self.height = 5, 5
-        self.map = [[0 for i in range(self.width)] for j in range(self.height)]
         self.myworld = world

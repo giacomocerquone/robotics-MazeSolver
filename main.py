@@ -1,5 +1,4 @@
 """Main module"""
-import time
 from World2D import World2D
 
 def main():
@@ -17,7 +16,6 @@ def main():
         world.print_ranking()
         world.world_print()
         print(world.food_list)
-        # time.sleep(5)
 
 if __name__ == "__main__":
     main()
