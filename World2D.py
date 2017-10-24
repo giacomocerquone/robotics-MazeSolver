@@ -2,6 +2,7 @@
 
 import random
 from Robot import Robot
+from Food import Food
 
 class World2D:
     """World representation class"""
@@ -11,14 +12,23 @@ class World2D:
         self.height = height
         self.matrix = [[0 for i in range(self.width)] for j in range(self.height)]
         self.robot_list = []
+        self.food_list = []
+        # Adding walls char in matrix
         for i in range(self.height):
             self.matrix[i][random.randint(0, self.width-1)] = '#'
             self.matrix[i][random.randint(0, self.width-1)] = '#'
+        # Adding robot char in matrix
         for i in range(self.height):
             random_n = random.randint(0, self.width-1)
             while self.matrix[i][random_n] == "#":
                 random_n = random.randint(0, self.width-1)
             self.matrix[i][random_n] = "R" + i.__str__()
+        # Adding food char in matrix
+        for i in range(self.height):
+            random_n = random.randint(0, self.width-1)
+            while self.matrix[i][random_n] == "#" or str(self.matrix[i][random_n])[0] == "R":
+                random_n = random.randint(0, self.width-1)
+            self.matrix[i][random_n] = "o"
 
     def world_print(self):
         """Print the world"""
@@ -34,6 +44,15 @@ class World2D:
                 if isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == 'R':
                     rob = Robot(self.matrix[i][j], (i, j), self)
                     self.robot_list.append(rob)
+
+    def make_foods(self):
+        """Instantiate the foods"""
+
+        for i in range(self.height):
+            for j in range(self.width):
+                if isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == 'o':
+                    food = Food((i, j), self)
+                    self.food_list.append(food)
 
     def print_robots(self):
         """Print the robots"""
