@@ -2,7 +2,6 @@
 
 import random
 from robot.Robot import Robot
-from food.Food import Food
 
 class World2D:
     """World representation class"""
@@ -29,6 +28,7 @@ class World2D:
             while self.matrix[i][random_n] == "#" or str(self.matrix[i][random_n])[0] == "R":
                 random_n = random.randint(0, self.width-1)
             self.matrix[i][random_n] = "o"
+            self.food_list += 1
 
     def world_print(self):
         """Print the world"""
@@ -45,15 +45,6 @@ class World2D:
                     rob = Robot(self.matrix[i][j], (i, j), "random", self)
                     self.robot_list.append(rob)
 
-    def make_foods(self):
-        """Instantiate the food"""
-
-        for i in range(self.height):
-            for j in range(self.width):
-                if isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == 'o':
-                    Food((i, j), self)
-                    self.food_list += 1
-
     def print_robots(self):
         """Print the robots"""
         for robot in self.robot_list:
@@ -63,19 +54,20 @@ class World2D:
         """Print the ranking"""
         ranking = dict()
         for robot in self.robot_list:
-            ranking[robot.name] = robot.points
+            ranking[robot.name] = str(robot.points) + ', ' + str(robot.kind)
         sorted_robots = sorted(ranking, key=ranking.get, reverse=True)
+        print("\nRanking")
         for key in sorted_robots:
-            print(key, ranking[key], end=', ')
+            print(key, ranking[key])
         print("\n")
 
     def get_around(self, pos):
-
         '''
         extract of the surroundings
         :param pos: coordinate of the center cell from witch we extract the surroundings
         :return: list of surroundings cells
         '''
+        
         out = []
         if pos[0] == 0:
             out.append(('N', "-"))

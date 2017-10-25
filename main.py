@@ -6,7 +6,6 @@ def main():
     world = World2D(10, 10)
 
     world.make_robots()
-    world.make_foods()
     world.world_print()
 
     while world.food_list:
