@@ -25,7 +25,11 @@ class World2D:
         # Adding food char in matrix
         for i in range(self.height):
             random_n = random.randint(0, self.width-1)
-            while self.matrix[i][random_n] == "#" or str(self.matrix[i][random_n])[0] == "R":
+            while (not self.matrix[i][random_n] == 0
+                   or (i > 0 and random_n > 0 and self.matrix[i-1][random_n] == "#" and self.matrix[i][random_n-1] == "#")
+                   or (i > 0 and random_n < self.width-1 and self.matrix[i-1][random_n] == "#" and self.matrix[i][random_n+1] == "#")
+                   or (i < self.height-1 and random_n > 0 and self.matrix[i+1][random_n] == "#" and self.matrix[i][random_n-1] == "#")
+                   or (i < self.height-1 and random_n < self.width-1 and self.matrix[i+1][random_n] == "#" and self.matrix[i][random_n+1] == "#")):
                 random_n = random.randint(0, self.width-1)
             self.matrix[i][random_n] = "o"
             self.food_list += 1
@@ -42,7 +46,8 @@ class World2D:
         for i in range(self.height):
             for j in range(self.width):
                 if isinstance(self.matrix[i][j], str) and self.matrix[i][j][0] == 'R':
-                    rob = Robot(self.matrix[i][j], (i, j), "random", self)
+                    types = ['smart', 'dumb']
+                    rob = Robot(self.matrix[i][j], (i, j), random.choice(types), self)
                     self.robot_list.append(rob)
 
     def print_robots(self):
@@ -67,7 +72,7 @@ class World2D:
         :param pos: coordinate of the center cell from witch we extract the surroundings
         :return: list of surroundings cells
         '''
-        
+
         out = []
         if pos[0] == 0:
             out.append(('N', "-"))
