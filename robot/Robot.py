@@ -70,10 +70,8 @@ class Robot:
         Analize his own map and decide where he can move
         :return N S E W or Blocked:
         """
-
-        # Change here to let the robot eat the food
-        if self.kind == "random":
-            out = []
+        out = []
+        if self.kind == "dumb":
             if self.map[1][2] in [0, 'o']:
                 out.append('N')
             if self.map[3][2] in [0, 'o']:
@@ -81,6 +79,23 @@ class Robot:
             if self.map[2][1] in [0, 'o']:
                 out.append('W')
             if self.map[2][3] in [0, 'o']:
+                out.append('E')
+        elif self.kind == "smart":
+            if self.map[1][2] in ['o']:
+                return('N')
+            if self.map[3][2] in ['o']:
+                return('S')
+            if self.map[2][1] in ['o']:
+                return('W')
+            if self.map[2][3] in ['o']:
+                return('E')
+            if self.map[1][2] in [0]:
+                out.append('N')
+            if self.map[3][2] in [0]:
+                out.append('S')
+            if self.map[2][1] in [0]:
+                out.append('W')
+            if self.map[2][3] in [0]:
                 out.append('E')
 
         if not out:
