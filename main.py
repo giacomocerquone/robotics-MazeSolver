@@ -14,7 +14,6 @@ def main():
             robot.step()
         world.print_ranking()
         world.world_print()
-        print(world.food_list)
 
 if __name__ == "__main__":
     main()
