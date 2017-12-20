@@ -1,4 +1,4 @@
-//www.elegoo.com
+/* Code written by Gianluca di Francesco and Giacomo Cerquone */
 
 #define SINISTRO digitalRead(11) // sinistro
 #define CENTRALE digitalRead(4) // centrale
@@ -12,6 +12,10 @@
 #define in4 6
 
 #define ABS 80
+
+unsigned long STARTINGTIME;
+int LASTSENSOR = 0;
+
 
 void _mForward()
 { 
@@ -73,75 +77,48 @@ void setup(){
   pinMode(ENB,OUTPUT);
 }
 
-
 void regSx() {
-  _mForward();
-  delay(100);
-  while(!DESTRO) {
-    if(SINISTRO)
+  STARTINGTIME = millis();
+  while((millis() - STARTINGTIME) < 700) {
+    if(SINISTRO) {
       _mLeft();
-    else
+      STARTINGTIME = millis();
+    } else if (CENTRALE) {
       _mForward();
+    }
   }
+  return ;
 }
 
 void regDx() {
-  _mForward();
-  delay(100);
-  while(!SINISTRO) {
-    if(DESTRO)
+  STARTINGTIME = millis();
+  while((millis() - STARTINGTIME) < 700) {
+    if(DESTRO) {
       _mRight();
-    else
+      STARTINGTIME = millis();
+    } else if (CENTRALE) {
       _mForward();
+    }
   }
+  return ;
 }
 
 void loop() {
-  /** Alter
-  if(CENTRALE && !SINISTRO && !DESTRO){
+  
+  if(SINISTRO) {
+    _mLeft();
+    LASTSENSOR = 0;
+    delay(100);
+  } else if(CENTRALE) {
     _mForward();
-  } else if(SINISTRO) {
-    while(true) {
-      _mLeft();
-      if(DESTRO) {
-        regSx();
-        break;
-      }
-    }
   } else if(DESTRO) {
-    while(true) {
-      _mLeft();
-      if(SINISTRO) {
-        regDx();
-        break;
-      }
-    }
-  } else {
-    _mStop();
-  }*/
-
-  if(CENTRALE && !SINISTRO && !DESTRO){
-    _mForward();
-  } else if(SINISTRO) {
-    while(true) {
-      _mLeft();
-      if(DESTRO) {
-        _mForward();
-        delay(100);
-        break;
-      }
-    }
-  } else if(DESTRO) {
-    while(true) {
-      _mRight();
-      if(SINISTRO) {
-        _mForward();
-        delay(100);
-        break;
-      }
-    }
-  } else {
-    _mStop();
+    _mRight();
+    LASTSENSOR = 2;
+    delay(100);
+  } else if(LASTSENSOR == 0) {
+    _mLeft();
+  } else if(LASTSENSOR == 2) {
+    _mRight();
   }
   
 }
