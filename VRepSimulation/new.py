@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 # Copyright 2006-2017 Coppelia Robotics GmbH. All rights reserved. 
 # marc@coppeliarobotics.com
 # www.coppeliarobotics.com
@@ -54,8 +55,6 @@ if clientID!=-1:
 		print ('Remote API function call returned with error code: ',res)
 
 	time.sleep(2)
-	
-	LASTSENSOR = 0
 
 	# Initializate
 	r,LeftSensor_handle=vrep.simxGetObjectHandle(clientID,"LeftSensor#",vrep.simx_opmode_blocking)	
@@ -75,7 +74,17 @@ if clientID!=-1:
 	
 	# Now retrieve streaming data (i.e. in a non-blocking fashion):
 	startTime=time.time()
-	while True:
+	
+	LASTSENSOR = 0
+	sx = 0
+	dx = 0
+	rounds = 0
+	tsx = time.time()
+	tdx = time.time()
+	arriving = 0
+	run = True
+	
+	while run:
 			
 		# Sense
 		r,left,auxPackets=vrep.simxReadVisionSensor(clientID,LeftSensor_handle,vrep.simx_opmode_buffer)
@@ -85,38 +94,70 @@ if clientID!=-1:
 		left = not left
 		mid = not mid
 		right = not right
-		print ('LeftSensor: %s\tMiddleSensor: %s\tRightSensor: %s' % (left, mid, right))
+		print ('LeftSensor: %s\tMiddleSensor: %s\tRightSensor: %s\tSx: %s\tDx: %s\t360s: %s' % (left, mid, right, sx, dx, rounds))
 		
 		# Think
 		if left:
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, LeftJoint_handle, -2, vrep.simx_opmode_streaming)
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, RightJoint_handle, 2, vrep.simx_opmode_streaming)
-			LASTSENSOR = 0
-			startTime=time.time()
-			#while (left and mid and right):
-                         #       pass
-                        if(time.time() - startTime > 1):
-                                break
+
+                        if (time.time()-tdx)>1:
+                                rounds = rounds+1
+                                tsx = time.time()
+                        elif (time.time()-tdx)>0.35:
+                                dx = dx+1
+                        tdx = time.time()
+                        LASTSENSOR = 0
+                        
 		elif mid:
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, LeftJoint_handle, 5, vrep.simx_opmode_streaming)
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, RightJoint_handle, 5, vrep.simx_opmode_streaming)
 			if right:
-				LASTSENSOR = 2
+                                LASTSENSOR = 2
+                        if (time.time()-tsx)>1:
+                                rounds = rounds+1
+                        elif (time.time()-tsx)>0.35:
+                                sx = sx+1
+                        if (time.time()-tdx)>1:
+                                rounds = rounds+1
+                        elif (time.time()-tdx)>0.35:
+                                dx = dx+1
+                        tsx = time.time()
+                        tdx = time.time()
+                                
 		elif right:
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, LeftJoint_handle, 2, vrep.simx_opmode_streaming)
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, RightJoint_handle, -2, vrep.simx_opmode_streaming)
-			LASTSENSOR = 2
+			if (time.time()-tsx)>1:
+                                rounds = rounds+1
+                                tdx = time.time()
+                        elif (time.time()-tsx)>0.35:
+                                sx = sx+1
+                        tsx = time.time()
+                        LASTSENSOR = 2
+                                
 		elif LASTSENSOR == 0:
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, LeftJoint_handle, -2, vrep.simx_opmode_streaming)
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, RightJoint_handle, 2, vrep.simx_opmode_streaming)
+                        tdx = time.time()
 		elif LASTSENSOR == 2:
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, LeftJoint_handle, 2, vrep.simx_opmode_streaming)
 			errorCode=vrep.simxSetJointTargetVelocity(clientID, RightJoint_handle, -2, vrep.simx_opmode_streaming)
+                        tsx = time.time()
 			
+                if right:
+                        if(arriving == 0):
+                                arriving = time.time()
+                        elif (time.time() - arriving) > 3:
+                                run = False
+                else:
+                        arriving = 0
 		time.sleep(0.005)
+		
+	errorCode=vrep.simxSetJointTargetVelocity(clientID, LeftJoint_handle, 0, vrep.simx_opmode_streaming)
+	errorCode=vrep.simxSetJointTargetVelocity(clientID, RightJoint_handle, 0, vrep.simx_opmode_streaming)
+	print('MAZE SOLVED!')
 
-        
-	print ('FINISHED')
 	# Now send some data to V-REP in a non-blocking fashion:
 	vrep.simxAddStatusbarMessage(clientID,'Hello V-REP!',vrep.simx_opmode_oneshot)
 
