@@ -13,14 +13,7 @@
 
 #define ABS 80
 
-unsigned int LASTSENSOR = 0;
-unsigned int sx = 0;
-unsigned int dx = 0;
-unsigned int rounds = 0;
-unsigned long tsx = millis();
-unsigned long tdx = millis();
-unsigned long arriving = 0;
-bool run = true;
+unsigned long STARTINGTIME;
 
 
 void _mForward()
@@ -33,7 +26,6 @@ void _mForward()
   digitalWrite(in4,HIGH);
   Serial.println("Forward");
 }
-
 /*define back function*/
 void _mBack()
 {
@@ -84,65 +76,49 @@ void setup(){
   pinMode(ENB,OUTPUT);
 }
 
-void loop() {
-  
-  while(run) {
-
+void regSx() {
+  STARTINGTIME = millis();
+  while((millis() - STARTINGTIME) < 700) {
     if(SINISTRO) {
       _mLeft();
-      if((millis() - tdx) > 1000) {
-        rounds++;
-        tsx = millis();
-      } else if((millis() - tdx) > 350)
-        dx++;
-      tdx = millis();
-      LASTSENSOR = 0;
-
-    } else if(CENTRALE) {
+      STARTINGTIME = millis();
+    } else if (CENTRALE) {
       _mForward();
-      if(DESTRO)
-        LASTSENSOR = 2;
-      if((millis() - tsx) > 1000)
-        rounds++;
-      else if((millis() - tsx) > 350)
-        sx++;
-      if((millis() - tdx) > 1000)
-        rounds++;
-      else if((millis() - tdx) > 350)
-        dx++;
-      tsx = millis();
-      tdx = millis();
-
-    } else if(DESTRO) {
-      _mRight();
-      if((millis() - tsx) > 1000) {
-        rounds++;
-        tdx = millis();
-      } else if((millis() - tsx) > 350)
-        sx++;
-      tsx = millis();
-      LASTSENSOR = 2;
-
-    } else if(LASTSENSOR == 0) {
-      _mLeft();
-      tdx = millis();
-
-    } else if(LASTSENSOR == 2) {
-      _mRight();
-      tsx = millis();
     }
-    if(DESTRO) {
-      if(arriving == 0)
-        arriving = millis();
-      else if((millis() - arriving) > 3000)
-        run = false;
-    } else arriving = 0;
-
-    delay(5);
   }
-
-  _mStop();
-  Serial.println("Maze solved!");
-  
-  while(true);
+  return ;
 }
+
+void regDx() {
+  STARTINGTIME = millis();
+  while((millis() - STARTINGTIME) < 700) {
+    if(DESTRO) {
+      _mRight();
+      STARTINGTIME = millis();
+    } else if (CENTRALE) {
+      _mForward();
+    }
+  }
+  return ;
+}
+
+void loop() {
+  
+  if(SINISTRO) {
+    _mLeft();
+    LASTSENSOR = 0;
+    delay(100);
+  } else if(CENTRALE) {
+    _mForward();
+  } else if(DESTRO) {
+    _mRight();
+    LASTSENSOR = 2;
+    delay(100);
+  } else if(LASTSENSOR == 0) {
+    _mLeft();
+  } else if(LASTSENSOR == 2) {
+    _mRight();
+  }
+  
+}
+
