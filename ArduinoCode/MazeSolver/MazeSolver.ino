@@ -4,6 +4,7 @@
 #define CENTRALE digitalRead(4) // centrale
 #define DESTRO digitalRead(2) // destro
 
+#define BZ 13
 #define ENA 10
 #define ENB 5
 #define in1 9
@@ -12,6 +13,10 @@
 #define in4 6
 
 #define ABS 80
+
+#define  B6    1975.53
+#define  C7    2093
+#define  D7    2349.32
 
 unsigned int LASTSENSOR = 0;
 unsigned int sx = 0;
@@ -72,7 +77,20 @@ void _mStop(){
    digitalWrite(ENA, LOW);
    digitalWrite(ENB, LOW);
    Serial.println("Stop!");
-} 
+}
+
+void _playSong() {
+  tone(BZ, B6, 50);
+  delay(50);
+  tone(BZ, C7, 50);
+  delay(50);
+  tone(BZ, D7, 50);
+  delay(250);
+  tone(BZ, B6, 100);
+  delay(100);
+  tone(BZ, D7, 400);
+  delay(400);
+}
 
 void setup(){
   Serial.begin(9600);
@@ -82,6 +100,8 @@ void setup(){
   pinMode(in4,OUTPUT);
   pinMode(ENA,OUTPUT);
   pinMode(ENB,OUTPUT);
+  digitalWrite(BZ, HIGH);
+  tone(BZ, D7, 500);
 }
 
 void loop() {
@@ -90,11 +110,14 @@ void loop() {
 
     if(SINISTRO) {
       _mLeft();
-      if((millis() - tdx) > 1000) {
+      if((millis() - tdx) > 400) {
         rounds++;
+        tone(BZ, D7, 400);
         tsx = millis();
-      } else if((millis() - tdx) > 350)
+      } else if((millis() - tdx) > 250) {
         dx++;
+        tone(BZ, C7, 400);
+      }
       tdx = millis();
       LASTSENSOR = 0;
 
@@ -104,22 +127,30 @@ void loop() {
         LASTSENSOR = 2;
       if((millis() - tsx) > 1000)
         rounds++;
-      else if((millis() - tsx) > 350)
+      else if((millis() - tsx) > 250) {
         sx++;
-      if((millis() - tdx) > 1000)
+        tone(BZ, D7, 400);
+      }
+      if((millis() - tdx) > 400) {
         rounds++;
-      else if((millis() - tdx) > 350)
+        tone(BZ, D7, 400);
+      } else if((millis() - tdx) > 250) {
         dx++;
+        tone(BZ, C7, 400);
+      }
       tsx = millis();
       tdx = millis();
 
     } else if(DESTRO) {
       _mRight();
-      if((millis() - tsx) > 1000) {
+      if((millis() - tsx) > 400) {
         rounds++;
+        tone(BZ, D7, 400);
         tdx = millis();
-      } else if((millis() - tsx) > 350)
+      } else if((millis() - tsx) > 250) {
         sx++;
+        tone(BZ, D7, 400);
+      }
       tsx = millis();
       LASTSENSOR = 2;
 
@@ -143,6 +174,6 @@ void loop() {
 
   _mStop();
   Serial.println("Maze solved!");
-  
+  _playSong();
   while(true);
 }
