@@ -8,12 +8,29 @@ from serial import SerialException
 import os.path
 from time import sleep
 import multiprocessing
+import couchdb
 from pyswip import Prolog, registerForeign
 
 import sys
 
 prolog = Prolog()
 prolog.assertz("sensorup(1)")
+
+# DB connection
+
+couchServer = couchdb.Server('http://192.168.1.10:5984/')
+user = "admin"
+password = "mysecretpassword"
+couchserver = couchdb.Server("http://%s:%s@192.168.1.10:5984/" % (user, password))
+
+dbname = "robotics_mazesolver"
+if dbname in couchserver:
+    db = couchserver[dbname]
+else:
+    db = couchserver.create(dbname)
+
+doc_id, doc_rev = db.save({'sensorsHIT': {'s1': 0, 's2': 0, 's3': 0} })
+sensors = [0, 0, 0]
 
 def think(data):
         #rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
@@ -34,12 +51,11 @@ def think(data):
                 pub = rospy.Publisher('arriving',String,queue_size=10)
         
         for i in range(1, 4):
-                s = data.data[i]
-                if prolog.query("sensorup(%d)" % s):
-                        print(s)
-        
-                                   
-        
+            s = data.data[i]
+            if prolog.query("sensorup(%d)" % s):
+                sensors[i-1] += s
+                doc_id, doc_rev = db.save({'sensorsHIT': {'s1': sensors[0], 's2': sensors[1], 's3': sensors[2]} })
+
         pub.publish("yes");
 
 if __name__=="__main__":
