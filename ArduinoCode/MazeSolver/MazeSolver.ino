@@ -36,7 +36,7 @@ ros::NodeHandle nh;
 
 
 void _mForward()
-{ 
+{
   analogWrite(ENA,ABS);
   analogWrite(ENB,ABS);
   digitalWrite(in1,LOW);//digital output
@@ -193,7 +193,7 @@ void setup(){
   pinMode(ENB,OUTPUT);
   digitalWrite(BZ, HIGH);
   tone(BZ, D7, 500);
-  
+
   nh.initNode();
   nh.advertise(chatter);
   nh.subscribe(sub);
@@ -203,93 +203,18 @@ void setup(){
   nh.subscribe(sub4);
   nh.subscribe(sub5);
   nh.subscribe(sub6);
-
-
 }
 
 void loop() {
-  
+
   s_array.data_length = 5;
-  
+
   s_array.data[1] = SINISTRO;
   s_array.data[2] = CENTRALE;
   s_array.data[3] = DESTRO;
   s_array.data[4]= LASTSENSOR;
-  
+
   chatter.publish( &s_array );
   nh.spinOnce();
   delay(20);
-
-/*
-  while(run) {
-
-    if(SINISTRO) {
-      _mLeft();
-      if((millis() - tdx) > 400) {
-        rounds++;
-        tone(BZ, D7, 400);
-        tsx = millis();
-      } else if((millis() - tdx) > 250) {
-        dx++;
-        tone(BZ, C7, 400);
-      }
-      tdx = millis();
-      LASTSENSOR = 0;
-
-    } else if(CENTRALE) {
-      _mForward();
-      if(DESTRO)
-        LASTSENSOR = 2;
-      if((millis() - tsx) > 1000)
-        rounds++;
-      else if((millis() - tsx) > 250) {
-        sx++;
-        tone(BZ, D7, 400);
-      }
-      if((millis() - tdx) > 400) {
-        rounds++;
-        tone(BZ, D7, 400);
-      } else if((millis() - tdx) > 250) {
-        dx++;
-        tone(BZ, C7, 400);
-      }
-      tsx = millis();
-      tdx = millis();
-
-    } else if(DESTRO) {
-      _mRight();
-      if((millis() - tsx) > 400) {
-        rounds++;
-        tone(BZ, D7, 400);
-        tdx = millis();
-      } else if((millis() - tsx) > 250) {
-        sx++;
-        tone(BZ, D7, 400);
-      }
-      tsx = millis();
-      LASTSENSOR = 2;
-
-    } else if(LASTSENSOR == 0) {
-      _mLeft();
-      tdx = millis();
-
-    } else if(LASTSENSOR == 2) {
-      _mRight();
-      tsx = millis();
-    }
-    if(DESTRO) {
-      if(arriving == 0)
-        arriving = millis();
-      else if((millis() - arriving) > 3000)
-        run = false;
-    } else arriving = 0;
-
-    delay(5);
-  }
-
-  _mStop();
-  Serial.println("Maze solved!");
-  _playSong();
-  while(true);
-*/
 }
