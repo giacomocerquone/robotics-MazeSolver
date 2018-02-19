@@ -5,9 +5,9 @@ from std_msgs.msg import Int16MultiArray
 from std_msgs.msg import String
 from rosserial_python import SerialClient, RosSerialServer
 from serial import SerialException
+import os.path
 from time import sleep
 import multiprocessing
-import pprint
 
 import sys
 
@@ -30,12 +30,14 @@ def think(data):
         pub = rospy.Publisher('arriving',String,queue_size=10)
     
     pub.publish("yes");
+
 if __name__=="__main__":
 
     rospy.init_node("serial_node")
     rospy.loginfo("ROS Serial Python Node")
+    
 
-    port_name = rospy.get_param('~port','/dev/ttyACM2')
+    port_name = rospy.get_param('~port','/dev/arduino')
     baud = int(rospy.get_param('~baud','57600'))
 
     # for systems where pyserial yields errors in the fcntl.ioctl(self.fd, TIOCMBIS, \
@@ -46,8 +48,12 @@ if __name__=="__main__":
         rospy.loginfo("Connecting to %s at %d baud" % (port_name,baud) )
         rospy.Subscriber("sensors", Int16MultiArray, think)
         try:
-            client = SerialClient(port_name, baud)
-            client.run()
+            if os.path.exists('/dev/arduino'):
+                client = SerialClient(port_name, baud)
+                client.run()
+            else:
+                sleep(1.0)
+                continue
         except KeyboardInterrupt:
             break
         except SerialException:
@@ -56,4 +62,9 @@ if __name__=="__main__":
         except OSError:
             sleep(1.0)
             continue
+        except Exception as e:
+            print e
+            sleep(1.0)
+            continue
+
 
