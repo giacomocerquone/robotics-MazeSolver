@@ -13,7 +13,7 @@ from pyswip import Prolog, registerForeign
 import sys
 
 prolog = Prolog()
-prolog.assertz("sensorup(_, 1)")
+prolog.assertz("sensorup(1)")
 
 def think(data):
 	#rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
@@ -35,8 +35,9 @@ def think(data):
 	
 	for i in range(1, 4):
 		s = data.data[i]
-		if prolog.query("sensorup(%d, 1)" % s):
+		if prolog.query("sensorup(%d)" % s):
 			#incrementa sensore data.data[i] nel DB
+	
 				   
 	
 	pub.publish("yes");
