@@ -1,23 +1,41 @@
 #!/usr/bin/env python
 
 import rospy
+from std_msgs.msg import Int16MultiArray
 from std_msgs.msg import String
 from rosserial_python import SerialClient, RosSerialServer
 from serial import SerialException
 from time import sleep
 import multiprocessing
+import pprint
 
 import sys
 
-def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-
+def think(data):
+    #rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    #print(data.data)
+    if data.data[1]==1:
+        pub = rospy.Publisher('leftlogic',String,queue_size=10)
+    elif data.data[2]==1:
+        pub = rospy.Publisher('forwardlogic',String,queue_size=10)
+    elif data.data[3]==1:
+        pub = rospy.Publisher('rightlogic',String,queue_size=10)
+    elif data.data[4]==0:
+        pub = rospy.Publisher('leftfinal',String,queue_size=10)
+    elif data.data[4]==2:
+        pub = rospy.Publisher('rightfinal',String,queue_size=10)
+    if data.data[3]==1:
+        pub = rospy.Publisher('right',String,queue_size=10)
+    else:
+        pub = rospy.Publisher('arriving',String,queue_size=10)
+    
+    pub.publish("yes");
 if __name__=="__main__":
 
     rospy.init_node("serial_node")
     rospy.loginfo("ROS Serial Python Node")
 
-    port_name = rospy.get_param('~port','/dev/ttyACM0')
+    port_name = rospy.get_param('~port','/dev/ttyACM2')
     baud = int(rospy.get_param('~baud','57600'))
 
     # for systems where pyserial yields errors in the fcntl.ioctl(self.fd, TIOCMBIS, \
@@ -26,7 +44,7 @@ if __name__=="__main__":
 
     while not rospy.is_shutdown():
         rospy.loginfo("Connecting to %s at %d baud" % (port_name,baud) )
-        rospy.Subscriber("chatter", String, callback)
+        rospy.Subscriber("sensors", Int16MultiArray, think)
         try:
             client = SerialClient(port_name, baud)
             client.run()

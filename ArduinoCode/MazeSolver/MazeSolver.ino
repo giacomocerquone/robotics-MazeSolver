@@ -1,5 +1,9 @@
 /* Code written by Gianluca di Francesco and Giacomo Cerquone */
 
+#include <ros.h>
+#include <std_msgs/Int16MultiArray.h>
+#include <std_msgs/String.h>
+
 #define SINISTRO digitalRead(11) // sinistro
 #define CENTRALE digitalRead(4) // centrale
 #define DESTRO digitalRead(2) // destro
@@ -26,6 +30,9 @@ unsigned long tsx = millis();
 unsigned long tdx = millis();
 unsigned long arriving = 0;
 bool run = true;
+
+ros::NodeHandle nh;
+
 
 
 void _mForward()
@@ -92,6 +99,90 @@ void _playSong() {
   delay(400);
 }
 
+void leftlogic(const std_msgs::String& toggle_msg){
+ _mLeft();
+      if((millis() - tdx) > 400) {
+        rounds++;
+        tone(BZ, D7, 400);
+        tsx = millis();
+      } else if((millis() - tdx) > 250) {
+        dx++;
+        tone(BZ, C7, 400);
+      }
+      tdx = millis();
+      LASTSENSOR = 0;
+}
+void forwardlogic(const std_msgs::String& toggle_msg){
+_mForward();
+      if(DESTRO)
+        LASTSENSOR = 2;
+      if((millis() - tsx) > 1000)
+        rounds++;
+      else if((millis() - tsx) > 250) {
+        sx++;
+        tone(BZ, D7, 400);
+      }
+      if((millis() - tdx) > 400) {
+        rounds++;
+        tone(BZ, D7, 400);
+      } else if((millis() - tdx) > 250) {
+        dx++;
+        tone(BZ, C7, 400);
+      }
+      tsx = millis();
+      tdx = millis();
+
+}
+void rightlogic(const std_msgs::String& toggle_msg){
+  _mRight();
+      if((millis() - tsx) > 400) {
+        rounds++;
+        tone(BZ, D7, 400);
+        tdx = millis();
+      } else if((millis() - tsx) > 250) {
+        sx++;
+        tone(BZ, D7, 400);
+      }
+      tsx = millis();
+      LASTSENSOR = 2;
+
+}
+void leftfinal(const std_msgs::String& toggle_msg){
+  _mLeft();
+      tdx = millis();
+
+}
+void rightfinal(const std_msgs::String& toggle_msg){
+  _mRight();
+     tsx = millis();
+
+}
+void right(const std_msgs::String& toggle_msg){
+  if(arriving == 0)
+        arriving = millis();
+      else if((millis() - arriving) > 3000)
+         _mStop();
+  Serial.println("Maze solved!");
+  //_playSong();
+
+}
+void arriving1(const std_msgs::String& toggle_msg){
+ arriving = 0;
+
+}
+
+
+
+std_msgs::Int16MultiArray s_array;
+ros::Publisher chatter("sensors", &s_array);
+ros::Subscriber<std_msgs::String> sub("leftlogic", &leftlogic);
+ros::Subscriber<std_msgs::String> sub1("forwardlogic", &forwardlogic);
+ros::Subscriber<std_msgs::String> sub2("rightlogic", &rightlogic);
+ros::Subscriber<std_msgs::String> sub3("leftfinal", &leftfinal);
+ros::Subscriber<std_msgs::String> sub4("rightfinal", &rightfinal);
+ros::Subscriber<std_msgs::String> sub5("right", &right);
+ros::Subscriber<std_msgs::String> sub6("arriving", &arriving1);
+
 void setup(){
   Serial.begin(9600);
   pinMode(in1,OUTPUT);
@@ -102,10 +193,34 @@ void setup(){
   pinMode(ENB,OUTPUT);
   digitalWrite(BZ, HIGH);
   tone(BZ, D7, 500);
+  
+  nh.initNode();
+  nh.advertise(chatter);
+  nh.subscribe(sub);
+  nh.subscribe(sub1);
+  nh.subscribe(sub2);
+  nh.subscribe(sub3);
+  nh.subscribe(sub4);
+  nh.subscribe(sub5);
+  nh.subscribe(sub6);
+
+
 }
 
 void loop() {
   
+  s_array.data_length = 5;
+  
+  s_array.data[1] = SINISTRO;
+  s_array.data[2] = CENTRALE;
+  s_array.data[3] = DESTRO;
+  s_array.data[4]= LASTSENSOR;
+  
+  chatter.publish( &s_array );
+  nh.spinOnce();
+  delay(20);
+
+/*
   while(run) {
 
     if(SINISTRO) {
@@ -176,4 +291,5 @@ void loop() {
   Serial.println("Maze solved!");
   _playSong();
   while(true);
+*/
 }
