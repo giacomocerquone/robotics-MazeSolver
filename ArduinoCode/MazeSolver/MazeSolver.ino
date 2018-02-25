@@ -216,5 +216,5 @@ void loop() {
 
   chatter.publish( &s_array );
   nh.spinOnce();
-  delay(20);
+  delay(5);
 }
